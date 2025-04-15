@@ -1,0 +1,105 @@
+<div class="container mx-auto py-8 px-4">
+  <div class="flex items-center justify-between mb-8">
+    <div>
+      <div class="flex items-center mb-2">
+        <a routerLink="/admin" class="text-primary hover:underline mr-2">Admin Dashboard</a>
+        <span class="text-gray-500">/</span>
+        <span class="ml-2 text-gray-700">Manage Comments</span>
+      </div>
+      <h1 class="text-3xl font-bold text-gray-900">Manage Comments</h1>
+    </div>
+    <div class="flex items-center space-x-4">
+      <button 
+        (click)="toggleReportedFilter()" 
+        class="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 flex items-center"
+      >
+        <span *ngIf="showReportedOnly">Show All Comments</span>
+        <span *ngIf="!showReportedOnly">Show Reported Only</span>
+      </button>
+      <a routerLink="/admin" class="px-4 py-2 border border-gray-300 rounded-md hover:bg-gray-50 text-gray-700">
+        Back to Dashboard
+      </a>
+    </div>
+  </div>
+  
+  <!-- Comments Table -->
+  <div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Content
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Topic
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Author
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Date
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Status
+            </th>
+            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Actions
+            </th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          <tr *ngIf="comments.length === 0">
+            <td colspan="6" class="px-6 py-4 text-center text-gray-500">
+              No comments found
+            </td>
+          </tr>
+          <tr *ngFor="let comment of comments" [class.bg-red-50]="comment.isReported">
+            <td class="px-6 py-4">
+              <div class="text-sm text-gray-900 truncate max-w-xs">{{ comment.content }}</div>
+            </td>
+            <td class="px-6 py-4">
+              <div class="text-sm text-gray-500 truncate max-w-xs">{{ getTopic(comment.topicId) }}</div>
+            </td>
+            <td class="px-6 py-4">
+              <div class="text-sm text-gray-500">{{ comment.authorName }}</div>
+            </td>
+            <td class="px-6 py-4">
+              <div class="text-sm text-gray-500">{{ comment.createdAt | date:'short' }}</div>
+            </td>
+            <td class="px-6 py-4">
+              <span *ngIf="comment.isReported" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                Reported
+              </span>
+              <span *ngIf="!comment.isReported" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                Normal
+              </span>
+            </td>
+            <td class="px-6 py-4 text-sm font-medium">
+              <div class="flex space-x-2">
+                <button 
+                  (click)="viewTopic(comment.topicId)" 
+                  class="text-primary hover:text-primary-dark"
+                >
+                  View Topic
+                </button>
+                <button 
+                  (click)="toggleReportComment(comment)" 
+                  [class]="comment.isReported ? 'text-green-600 hover:text-green-900' : 'text-yellow-600 hover:text-yellow-900'"
+                >
+                  {{ comment.isReported ? 'Clear Report' : 'Report' }}
+                </button>
+                <button 
+                  (click)="deleteComment(comment.id)" 
+                  class="text-red-600 hover:text-red-900"
+                >
+                  Delete
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,91 @@
+<div class="bg-light min-vh-100 d-flex align-items-center justify-content-center">
+  <div class="bg-white p-4 p-md-5 rounded shadow-lg w-100" style="max-width: 500px">
+    <h2 class="fs-2 fw-bold text-center text-primary mb-4">
+      Iniciar Sesión en ForoDuoc
+    </h2>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="mb-3">
+      <!-- Error message -->
+      <div
+        *ngIf="errorMessage"
+        class="alert alert-danger mb-4"
+      >
+        {{ errorMessage }}
+      </div>
+
+      <!-- Email -->
+      <div class="mb-3">
+        <label for="email" class="form-label"
+          >Correo electrónico</label
+        >
+        <input
+          type="email"
+          id="email"
+          formControlName="email"
+          class="form-control"
+          placeholder="Ingresa tu correo electrónico"
+        />
+        <div
+          *ngIf="
+            loginForm.get('email')?.invalid && loginForm.get('email')?.touched
+          "
+          class="text-danger small mt-1"
+        >
+          <span *ngIf="loginForm.get('email')?.errors?.['required']"
+            >El correo electrónico es requerido</span
+          >
+          <span *ngIf="loginForm.get('email')?.errors?.['email']"
+            >Por favor ingresa un correo electrónico válido</span
+          >
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="mb-3">
+        <label
+          for="password"
+          class="form-label"
+          >Contraseña</label
+        >
+        <input
+          type="password"
+          id="password"
+          formControlName="password"
+          class="form-control"
+          placeholder="Ingresa tu contraseña"
+        />
+        <div
+          *ngIf="
+            loginForm.get('password')?.invalid &&
+            loginForm.get('password')?.touched
+          "
+          class="text-danger small mt-1"
+        >
+          <span *ngIf="loginForm.get('password')?.errors?.['required']"
+            >La contraseña es requerida</span
+          >
+        </div>
+      </div>
+
+      <!-- Forgot password link -->
+      <div class="text-end mb-3">
+        <a
+          routerLink="/forgot-password"
+          class="small text-primary text-decoration-none"
+          >¿Olvidaste tu contraseña?</a
+        >
+      </div>
+
+      <!-- Login button -->
+      <button type="submit" class="btn btn-primary w-100 mb-3">Iniciar Sesión</button>
+
+      <!-- Register link -->
+      <div class="text-center">
+        <span class="text-secondary">¿No tienes una cuenta?</span>
+        <a routerLink="/register" class="text-primary text-decoration-none ms-1"
+          >Regístrate</a
+        >
+      </div>
+    </form>
+  </div>
+</div>

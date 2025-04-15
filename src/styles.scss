@@ -1,1 +1,41 @@
-/* You can add global styles to this file, and also import other style files */
+// Import Bootstrap variables
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+
+// Custom variables
+// $body-bg: #f8f9fa;
+// $body-color: #212529;
+// $text-muted: #6c757d;
+// $primary: #23b77b;
+// $link-color: $primary;
+// $link-hover-color: darken($primary, 10%);
+// $card-bg: #ffffff;
+// $card-border-radius: 0.5rem;
+// $btn-primary-bg: #23b77b;
+// $btn-outline-secondary-color: #6c757d;
+// $box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+// $card-border-color: rgba(0, 0, 0, 0.125);
+// $badge-bg: #28a745;
+// $badge-color: #ffffff;
+// $input-bg: #ffffff;
+// $input-border-color: #ced4da;
+// $input-border-radius: 0.25rem;
+// $danger: #dc3545;
+
+// @import 'css/variables.scss';
+// @import 'css/customs.scss';
+// @import "@fortawesome/fontawesome-free/scss/fontawesome";
+// @import "@fortawesome/fontawesome-free/scss/brands";
+// @import "@fortawesome/fontawesome-free/scss/regular";
+// @import "@fortawesome/fontawesome-free/scss/solid";
+
+// Import Bootstrap to apply the custom variables
+@import "bootstrap/scss/bootstrap";
+// @import 'ngx-toastr/toastr-bs5-alert';
+
+@import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900");
+body {
+  font-family: "Roboto", sans-serif;
+  background-color: $body-bg;
+  color: $body-color;
+}

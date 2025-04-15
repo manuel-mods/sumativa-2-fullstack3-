@@ -1,0 +1,93 @@
+<div class="container py-5">
+  <div *ngIf="topic && category" class="mb-5">
+    <!-- Breadcrumbs -->
+    <nav aria-label="breadcrumb" class="mb-4">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a routerLink="/" class="text-primary text-decoration-none">Inicio</a></li>
+        <li class="breadcrumb-item"><a [routerLink]="['/category', category.id]" class="text-primary text-decoration-none">{{ category.name }}</a></li>
+        <li class="breadcrumb-item active">Tema</li>
+      </ol>
+    </nav>
+    
+    <!-- Topic details -->
+    <div class="card mb-4">
+      <div class="card-body p-4">
+        <h1 class="fs-3 fw-bold text-dark mb-2">{{ topic.title }}</h1>
+        <div class="d-flex align-items-center small text-secondary mb-3">
+          <span>Por {{ topic.authorName }}</span>
+          <span class="mx-2">•</span>
+          <span>{{ topic.createdAt | date:'medium' }}</span>
+        </div>
+        <div class="py-3 border-top border-bottom">
+          <p class="text-dark mb-0" style="white-space: pre-line;">{{ topic.content }}</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Comments section -->
+    <h2 class="fs-4 fw-semibold text-dark mb-3">Comentarios ({{ comments.length }})</h2>
+    
+    <!-- Comment form -->
+    <div *ngIf="authService.isLoggedIn" class="card mb-4">
+      <div class="card-body p-4">
+        <h3 class="fs-5 fw-medium text-dark mb-3">Añadir un Comentario</h3>
+        <form [formGroup]="commentForm" (ngSubmit)="onCommentSubmit()">
+          <div class="mb-3">
+            <textarea 
+              formControlName="content" 
+              rows="3"
+              class="form-control"
+              placeholder="¿Cuál es tu opinión?"
+            ></textarea>
+            <div *ngIf="commentForm.get('content')?.invalid && commentForm.get('content')?.touched" class="text-danger small mt-1">
+              <span *ngIf="commentForm.get('content')?.errors?.['required']">El comentario es requerido</span>
+              <span *ngIf="commentForm.get('content')?.errors?.['minlength']">El comentario debe tener al menos 3 caracteres</span>
+            </div>
+          </div>
+          <div class="d-flex justify-content-end">
+            <button 
+              type="submit" 
+              class="btn btn-primary"
+              [disabled]="commentForm.invalid || isSubmitting"
+            >
+              <span *ngIf="!isSubmitting">Publicar Comentario</span>
+              <span *ngIf="isSubmitting">Publicando...</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    
+    <!-- Login prompt if not logged in -->
+    <div *ngIf="!authService.isLoggedIn" class="bg-light rounded p-4 text-center mb-4">
+      <p class="text-secondary mb-3">¿Quieres unirte a la conversación?</p>
+      <a routerLink="/login" class="btn btn-primary">
+        Inicia sesión para comentar
+      </a>
+    </div>
+    
+    <!-- Comments list -->
+    <div *ngIf="comments.length > 0; else noComments" class="mb-4">
+      <div *ngFor="let comment of comments" class="card mb-3">
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between mb-3">
+            <div class="d-flex align-items-center small text-secondary">
+              <span class="fw-medium text-dark">{{ comment.authorName }}</span>
+              <span class="mx-2">•</span>
+              <span>{{ comment.createdAt | date:'medium' }}</span>
+            </div>
+            <!-- Report comment button would go here -->
+          </div>
+          <p class="mb-0" style="white-space: pre-line;">{{ comment.content }}</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- No comments message -->
+    <ng-template #noComments>
+      <div class="bg-light rounded p-4 text-center">
+        <p class="text-secondary mb-0">Aún no hay comentarios. ¡Sé el primero en comentar!</p>
+      </div>
+    </ng-template>
+  </div>
+</div>

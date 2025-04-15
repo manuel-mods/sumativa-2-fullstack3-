@@ -1,0 +1,151 @@
+<div class="container py-5">
+  <div class="d-flex justify-content-between align-items-center mb-5">
+    <h1 class="fs-2 fw-bold text-dark">Panel de Administración</h1>
+    <a routerLink="/" class="text-primary text-decoration-none">Volver al Inicio</a>
+  </div>
+
+  <!-- Stats overview -->
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
+    <!-- Categories -->
+    <div class="col">
+      <div class="card h-100">
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="fs-5 fw-semibold text-dark">Categorías</h2>
+            <span class="text-primary fs-4">
+              <i class="fas fa-folder"></i>
+            </span>
+          </div>
+          <p class="fs-2 fw-bold text-dark mb-1">{{ categoriesCount }}</p>
+          <p class="text-secondary">Total de categorías</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Topics -->
+    <div class="col">
+      <div class="card h-100">
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="fs-5 fw-semibold text-dark">Temas</h2>
+            <span class="text-primary fs-4">
+              <i class="fas fa-file-alt"></i>
+            </span>
+          </div>
+          <p class="fs-2 fw-bold text-dark mb-1">{{ topicsCount }}</p>
+          <p class="text-secondary mb-3">
+            Total de temas ({{ bannedTopicsCount }} bloqueados)
+          </p>
+          <button
+            (click)="navigateToManageTopics()"
+            class="btn btn-primary w-100"
+          >
+            Administrar Temas
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comments -->
+    <div class="col">
+      <div class="card h-100">
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="fs-5 fw-semibold text-dark">Comentarios</h2>
+            <span class="text-primary fs-4">
+              <i class="fas fa-comments"></i>
+            </span>
+          </div>
+          <p class="fs-2 fw-bold text-dark mb-1">{{ commentsCount }}</p>
+          <p class="text-secondary mb-3">
+            Total de comentarios ({{ reportedCommentsCount }} reportados)
+          </p>
+          <button
+            (click)="navigateToManageComments()"
+            class="btn btn-primary w-100"
+          >
+            Administrar Comentarios
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Users -->
+    <div class="col">
+      <div class="card h-100">
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="fs-5 fw-semibold text-dark">Usuarios</h2>
+            <span class="text-primary fs-4">
+              <i class="fas fa-users"></i>
+            </span>
+          </div>
+          <p class="fs-2 fw-bold text-dark mb-1">{{ usersCount }}</p>
+          <p class="text-secondary">Usuarios registrados</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="card mb-5">
+    <div class="card-body p-4">
+      <h2 class="fs-4 fw-semibold text-dark mb-4">Acciones Rápidas</h2>
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-3">
+        <div class="col">
+          <button
+            routerLink="/admin/topics"
+            class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center"
+          >
+            <i class="fas fa-search me-2"></i>
+            Ver Todos los Temas
+          </button>
+        </div>
+        <div class="col">
+          <button
+            routerLink="/admin/comments"
+            class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center"
+          >
+            <i class="fas fa-comment-slash me-2"></i>
+            Revisar Comentarios Reportados
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recent Activity (Mock) -->
+  <div class="card">
+    <div class="card-body p-4">
+      <h2 class="fs-4 fw-semibold text-dark mb-4">Actividad Reciente</h2>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">Acción</th>
+              <th scope="col">Usuario</th>
+              <th scope="col">Tiempo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Nuevo tema creado</td>
+              <td>user&#64;example.com</td>
+              <td>hace 1 hora</td>
+            </tr>
+            <tr>
+              <td>Nuevo comentario añadido</td>
+              <td>admin&#64;example.com</td>
+              <td>hace 3 horas</td>
+            </tr>
+            <tr>
+              <td>Nuevo usuario registrado</td>
+              <td>Sistema</td>
+              <td>hace 1 día</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

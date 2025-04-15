@@ -1,0 +1,32 @@
+<div class="container py-5">
+  <div class="text-center mb-5">
+    <h1 class="display-4 fw-bold text-dark">Bienvenido al Foro Duoc</h1>
+    <p class="lead text-secondary mt-2">Únete a nuestra comunidad y participa en discusiones sobre diversos temas</p>
+  </div>
+  
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    <div class="col" *ngFor="let category of categories">  
+      <div class="card h-100 shadow-sm" 
+           style="transition: all 0.3s ease; cursor: pointer;"
+           (click)="navigateToCategory(category.id)">
+        <div class="card-body p-4">
+          <div class="d-flex align-items-center mb-3">
+            <span class="text-primary fs-4 me-3">
+              <i [class]="category.iconClass"></i>
+            </span>
+            <h2 class="card-title fs-5 fw-semibold mb-0">{{ category.name }}</h2>
+          </div>
+          <p class="card-text text-secondary mb-3">{{ category.description }}</p>
+          <div class="d-flex justify-content-between align-items-center">
+            <span class="small text-muted">{{ category.topicsCount }} temas</span>
+            <button 
+              class="btn btn-primary btn-sm"
+              [routerLink]="['/category', category.id]">
+              Ver Temas
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

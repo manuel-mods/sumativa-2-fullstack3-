@@ -1,0 +1,83 @@
+<div class="container py-5" style="max-width: 900px;">
+  <div class="bg-white p-4 p-md-5 rounded shadow">
+    <div class="d-flex align-items-center mb-4">
+      <a routerLink="/" class="text-primary text-decoration-none me-2">Inicio</a>
+      <span class="text-secondary">/</span>
+      <span class="ms-2 text-dark">Crear Tema</span>
+    </div>
+    
+    <h1 class="fs-3 fw-bold text-dark mb-4">Crear Nuevo Tema</h1>
+    
+    <form [formGroup]="topicForm" (ngSubmit)="onSubmit()">
+      <!-- Title field -->
+      <div class="mb-3">
+        <label for="title" class="form-label">Título</label>
+        <input 
+          type="text" 
+          id="title" 
+          formControlName="title" 
+          class="form-control"
+          placeholder="Ingresa un título descriptivo"
+        >
+        <div *ngIf="topicForm.get('title')?.invalid && topicForm.get('title')?.touched" class="text-danger small mt-1">
+          <span *ngIf="topicForm.get('title')?.errors?.['required']">El título es requerido</span>
+          <span *ngIf="topicForm.get('title')?.errors?.['minlength']">El título debe tener al menos 5 caracteres</span>
+          <span *ngIf="topicForm.get('title')?.errors?.['maxlength']">El título debe tener menos de 100 caracteres</span>
+        </div>
+      </div>
+      
+      <!-- Category field -->
+      <div class="mb-3">
+        <label for="categoryId" class="form-label">Categoría</label>
+        <select 
+          id="categoryId" 
+          formControlName="categoryId" 
+          class="form-select"
+        >
+          <option value="" disabled>Selecciona una categoría</option>
+          <option *ngFor="let category of categories" [value]="category.id">
+            {{ category.name }}
+          </option>
+        </select>
+        <div *ngIf="topicForm.get('categoryId')?.invalid && topicForm.get('categoryId')?.touched" class="text-danger small mt-1">
+          <span *ngIf="topicForm.get('categoryId')?.errors?.['required']">La categoría es requerida</span>
+        </div>
+      </div>
+      
+      <!-- Content field -->
+      <div class="mb-3">
+        <label for="content" class="form-label">Contenido</label>
+        <textarea 
+          id="content" 
+          formControlName="content" 
+          rows="8"
+          class="form-control"
+          placeholder="Ingresa el contenido de tu tema aquí"
+        ></textarea>
+        <div *ngIf="topicForm.get('content')?.invalid && topicForm.get('content')?.touched" class="text-danger small mt-1">
+          <span *ngIf="topicForm.get('content')?.errors?.['required']">El contenido es requerido</span>
+          <span *ngIf="topicForm.get('content')?.errors?.['minlength']">El contenido debe tener al menos 20 caracteres</span>
+        </div>
+      </div>
+      
+      <!-- Submit button -->
+      <div class="d-flex justify-content-between mt-4">
+        <button 
+          type="button" 
+          routerLink="/"
+          class="btn btn-outline-secondary"
+        >
+          Cancelar
+        </button>
+        <button 
+          type="submit" 
+          class="btn btn-primary"
+          [disabled]="topicForm.invalid || isSubmitting"
+        >
+          <span *ngIf="!isSubmitting">Crear Tema</span>
+          <span *ngIf="isSubmitting">Creando...</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
