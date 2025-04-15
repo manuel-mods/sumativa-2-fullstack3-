@@ -16,7 +16,7 @@ export class AuthService {
     {
       id: '1',
       name: 'Admin User',
-      email: 'manuel@admin.com',
+      email: 'manuel@admin.cl',
       password: 'Admin@123',
       role: UserRole.ADMIN,
       createdAt: new Date('2024-01-01'),
@@ -24,7 +24,7 @@ export class AuthService {
     {
       id: '2',
       name: 'Regular User',
-      email: 'manuel@user.com',
+      email: 'manuel@user.cl',
       password: 'User@123',
       role: UserRole.USER,
       createdAt: new Date('2024-01-02'),

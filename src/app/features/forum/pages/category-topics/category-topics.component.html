@@ -1,58 +1,76 @@
 <div class="container py-5">
   <div *ngIf="category" class="mb-5">
-    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+    <div
+      class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4"
+    >
       <div>
         <nav aria-label="breadcrumb" class="mb-2">
           <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a routerLink="/" class="text-primary text-decoration-none">Home</a></li>
+            <li class="breadcrumb-item">
+              <a routerLink="/" class="text-primary text-decoration-none"
+                >Home</a
+              >
+            </li>
             <li class="breadcrumb-item active">{{ category.name }}</li>
           </ol>
         </nav>
         <h1 class="fs-3 fw-bold text-dark mt-2">{{ category.name }}</h1>
         <p class="text-secondary mt-1">{{ category.description }}</p>
       </div>
-      
-      <button *ngIf="authService.isLoggedIn" 
-              (click)="createNewTopic()" 
-              class="btn btn-primary mt-3 mt-md-0">
-        Create New Topic
+
+      <button
+        *ngIf="authService.isLoggedIn"
+        (click)="createNewTopic()"
+        class="btn btn-primary mt-3 mt-md-0"
+      >
+        Crear nuevo tema
       </button>
     </div>
-    
+
     <!-- Topics list -->
     <div *ngIf="topics.length > 0; else noTopics" class="mb-4">
-      <div *ngFor="let topic of topics" 
-           class="card mb-3 cursor-pointer" 
-           style="transition: all 0.3s ease;" 
-           (click)="navigateToTopicDetail(topic.id)">
+      <div
+        *ngFor="let topic of topics"
+        class="card mb-3 cursor-pointer"
+        style="transition: all 0.3s ease"
+        (click)="navigateToTopicDetail(topic.id)"
+      >
         <div class="card-body p-4">
           <h2 class="fs-5 fw-semibold text-dark mb-2">{{ topic.title }}</h2>
           <p class="text-secondary mb-3 text-truncate">{{ topic.content }}</p>
-          <div class="d-flex justify-content-between align-items-center small text-secondary">
+          <div
+            class="d-flex justify-content-between align-items-center small text-secondary"
+          >
             <div class="d-flex align-items-center">
-              <span>By {{ topic.authorName }}</span>
+              <span>por {{ topic.authorName }}</span>
               <span class="mx-2">•</span>
-              <span>{{ topic.createdAt | date:'medium' }}</span>
+              <span>{{ topic.createdAt | date : "medium" }}</span>
             </div>
-            <span>{{ topic.commentsCount }} comments</span>
+            <span>{{ topic.commentsCount }} comentarios</span>
           </div>
         </div>
       </div>
     </div>
-    
+
     <!-- No topics message -->
     <ng-template #noTopics>
       <div class="bg-light rounded p-4 text-center">
-        <p class="text-secondary mb-4">No topics have been created in this category yet.</p>
-        <button *ngIf="authService.isLoggedIn" 
-                (click)="createNewTopic()" 
-                class="btn btn-primary">
-          Be the first to create a topic
+        <p class="text-secondary mb-4">
+          Aún no se han creado temas en esta categoría.
+        </p>
+        <button
+          *ngIf="authService.isLoggedIn"
+          (click)="createNewTopic()"
+          class="btn btn-primary"
+        >
+          Sé el primero en crear un tema
         </button>
-        <button *ngIf="!authService.isLoggedIn" 
-                routerLink="/login" 
-                class="btn btn-primary">
-          Login to create a topic
+        <button
+          *ngIf="!authService.isLoggedIn"
+          routerLink="/login"
+          class="btn btn-primary"
+        >
+          Inicia sesión para crear un tema
         </button>
       </div>
     </ng-template>
