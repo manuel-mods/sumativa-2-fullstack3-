@@ -1,6 +1,11 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
 
@@ -9,64 +14,71 @@ import { AuthService } from '../../../../core/services/auth.service';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './register.component.html',
-  styleUrl: './register.component.scss'
+  styleUrl: './register.component.scss',
 })
 export class RegisterComponent {
   registerForm: FormGroup;
   errorMessage = '';
   passwordValidationErrors: string[] = [];
-  
+
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router
   ) {
-    this.registerForm = this.fb.group({
-      name: ['', [Validators.required, Validators.minLength(3)]],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required]],
-      confirmPassword: ['', [Validators.required]]
-    }, { validators: this.passwordMatchValidator });
+    this.registerForm = this.fb.group(
+      {
+        name: ['', [Validators.required, Validators.minLength(3)]],
+        email: ['', [Validators.required, Validators.email]],
+        password: ['', [Validators.required]],
+        confirmPassword: ['', [Validators.required]],
+      },
+      { validators: this.passwordMatchValidator }
+    );
   }
-  
+
   passwordMatchValidator(formGroup: FormGroup) {
     const password = formGroup.get('password')?.value;
     const confirmPassword = formGroup.get('confirmPassword')?.value;
-    
+
     if (password === confirmPassword) {
       return null;
     }
-    
+
     return { passwordMismatch: true };
   }
-  
+
   validatePassword() {
     const password = this.registerForm.get('password')?.value;
     if (!password) return;
-    
+
     const validation = this.authService.validatePassword(password);
     this.passwordValidationErrors = validation.errors;
-    
+
     if (!validation.valid) {
       this.registerForm.get('password')?.setErrors({ invalidPassword: true });
     }
   }
-  
+
   onSubmit(): void {
     this.validatePassword();
-    
+
     if (this.registerForm.invalid) {
       this.registerForm.markAllAsTouched();
       return;
     }
-    
+
     const { name, email, password } = this.registerForm.value;
-    const success = this.authService.register(name, email, password);
-    
+    this.authService.register(name, email, password).subscribe((success) => {
+      this.handleRegisterResponse(success);
+    });
+  }
+
+  handleRegisterResponse(success: boolean) {
     if (success) {
-      this.router.navigate(['/home']);
+      this.router.navigate(['/login']);
     } else {
-      this.errorMessage = 'Email already exists';
+      this.errorMessage = 'Error al registrar el usuario';
     }
   }
 }

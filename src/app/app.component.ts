@@ -13,4 +13,5 @@ import { NgIf } from '@angular/common';
 })
 export class AppComponent {
   authService = inject(AuthService);
+  title = 'foro-duoc-angular';
 }

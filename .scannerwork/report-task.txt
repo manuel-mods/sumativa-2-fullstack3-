@@ -1,0 +1,6 @@
+projectKey=manuel-mods_sumativa-2-fullstack3-_6dc13011-4556-4f48-8557-0a95d533e792
+serverUrl=http://localhost:9000
+serverVersion=25.4.0.105899
+dashboardUrl=http://localhost:9000/dashboard?id=manuel-mods_sumativa-2-fullstack3-_6dc13011-4556-4f48-8557-0a95d533e792
+ceTaskId=917deca5-c6f5-40e9-856a-d2f674cbef87
+ceTaskUrl=http://localhost:9000/api/ce/task?id=917deca5-c6f5-40e9-856a-d2f674cbef87

@@ -8,6 +8,7 @@ import {
 } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
+import { tap } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -39,10 +40,18 @@ export class LoginComponent {
       this.loginForm.markAllAsTouched();
       return;
     }
-
+    console.log;
     const { email, password } = this.loginForm.value;
-    const success = this.authService.login(email, password);
-
+    this.authService
+      .login(email, password)
+      .pipe(
+        tap((success) => {
+          this.handleLoginResponse(success);
+        })
+      )
+      .subscribe();
+  }
+  handleLoginResponse(success: boolean) {
     if (success) {
       this.router.navigate(['/home']);
     } else {

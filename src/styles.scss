@@ -24,14 +24,14 @@
 
 // @import 'css/variables.scss';
 // @import 'css/customs.scss';
-// @import "@fortawesome/fontawesome-free/scss/fontawesome";
-// @import "@fortawesome/fontawesome-free/scss/brands";
-// @import "@fortawesome/fontawesome-free/scss/regular";
-// @import "@fortawesome/fontawesome-free/scss/solid";
+@import "@fortawesome/fontawesome-free/scss/fontawesome";
+@import "@fortawesome/fontawesome-free/scss/brands";
+@import "@fortawesome/fontawesome-free/scss/regular";
+@import "@fortawesome/fontawesome-free/scss/solid";
 
 // Import Bootstrap to apply the custom variables
 @import "bootstrap/scss/bootstrap";
-// @import 'ngx-toastr/toastr-bs5-alert';
+@import "ngx-toastr/toastr-bs5-alert";
 
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900");
 body {

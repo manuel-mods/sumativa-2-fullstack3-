@@ -1,9 +1,37 @@
 import { Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { User, UserRole } from '../models/user.model';
+import { HttpClient } from '@angular/common/http';
+import { Observable, catchError, map, of, tap } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
 
 interface StoredUser extends User {
   password: string;
+}
+
+interface LoginRequest {
+  username: string;
+  password: string;
+}
+
+interface SignupRequest {
+  username: string;
+  email: string;
+  password: string;
+  roles?: string[];
+}
+
+interface JwtResponse {
+  token: string;
+  type: string;
+  id: number;
+  username: string;
+  email: string;
+  roles: string[];
+}
+
+interface MessageResponse {
+  message: string;
 }
 
 @Injectable({
@@ -11,31 +39,16 @@ interface StoredUser extends User {
 })
 export class AuthService {
   private readonly STORAGE_KEY = 'forum_auth';
-  private readonly USERS_STORAGE_KEY = 'forum_users';
-  private readonly MOCK_USERS = [
-    {
-      id: '1',
-      name: 'Admin User',
-      email: 'manuel@admin.cl',
-      password: 'Admin@123',
-      role: UserRole.ADMIN,
-      createdAt: new Date('2024-01-01'),
-    },
-    {
-      id: '2',
-      name: 'Regular User',
-      email: 'manuel@user.cl',
-      password: 'User@123',
-      role: UserRole.USER,
-      createdAt: new Date('2024-01-02'),
-    },
-  ];
-
+  private readonly API_URL = 'http://localhost:8080/api';
   private currentUserSignal = signal<User | null>(null);
+  private tokenKey = 'auth-token';
 
-  constructor(private router: Router) {
+  constructor(
+    private router: Router,
+    private http: HttpClient,
+    private toastr: ToastrService
+  ) {
     this.loadUserFromStorage();
-    this.initializeUserStorage();
   }
 
   get currentUser() {
@@ -43,130 +56,117 @@ export class AuthService {
   }
 
   get isLoggedIn() {
-    return !!this.currentUserSignal();
+    return !!this.currentUserSignal() && !!this.getToken();
   }
 
   get isAdmin() {
     return this.currentUserSignal()?.role === UserRole.ADMIN;
   }
 
-  login(email: string, password: string): boolean {
-    // First check mock users
-    const mockUser = this.MOCK_USERS.find(
-      (u) =>
-        u.email.toLowerCase() === email.toLowerCase() && u.password === password
-    );
-
-    if (mockUser) {
-      const { password: _, ...userData } = mockUser;
-      this.currentUserSignal.set(userData);
-      this.saveUserToStorage(userData);
-      return true;
-    }
-
-    // Then check stored users
-    const storedUsers = this.getStoredUsers();
-    const storedUser = storedUsers.find(
-      (u) =>
-        u.email.toLowerCase() === email.toLowerCase() && u.password === password
-    );
-
-    if (storedUser) {
-      const { password: _, ...userData } = storedUser;
-      this.currentUserSignal.set(userData);
-      this.saveUserToStorage(userData);
-      return true;
-    }
-
-    return false;
+  getToken(): string | null {
+    return localStorage.getItem(this.tokenKey);
   }
 
-  register(name: string, email: string, password: string): boolean {
-    // Check if email already exists in mock users
-    if (
-      this.MOCK_USERS.some((u) => u.email.toLowerCase() === email.toLowerCase())
-    ) {
-      return false;
-    }
+  login(username: string, password: string): Observable<boolean> {
+    const loginRequest: LoginRequest = { username, password };
 
-    // Check if email already exists in stored users
-    const storedUsers = this.getStoredUsers();
-    if (
-      storedUsers.some((u) => u.email.toLowerCase() === email.toLowerCase())
-    ) {
-      return false;
-    }
+    return this.http.post<JwtResponse>(`${this.API_URL}/auth/signin`, loginRequest)
+      .pipe(
+        tap(response => {
+          // Save token
+          localStorage.setItem(this.tokenKey, response.token);
 
-    const newUser = {
-      id: crypto.randomUUID(),
-      name,
+          // Create user object from response
+          const user: User = {
+            id: response.id.toString(),
+            name: response.username,
+            email: response.email,
+            role: response.roles.includes('ROLE_ADMIN') ? UserRole.ADMIN : UserRole.USER,
+            createdAt: new Date()
+          };
+
+          this.currentUserSignal.set(user);
+          this.saveUserToStorage(user);
+          this.toastr.success('Has iniciado sesión correctamente', 'Bienvenido');
+        }),
+        map(() => true),
+        catchError(error => {
+          console.error('Login failed', error);
+          this.toastr.error('Credenciales inválidas', 'Error de inicio de sesión');
+          return of(false);
+        })
+      );
+  }
+
+  register(name: string, email: string, password: string): Observable<boolean> {
+    const signupRequest: SignupRequest = {
+      username: name,
       email,
-      password,
-      role: UserRole.USER,
-      createdAt: new Date(),
+      password
     };
 
-    storedUsers.push(newUser);
-    localStorage.setItem(this.USERS_STORAGE_KEY, JSON.stringify(storedUsers));
-
-    // Auto login after register
-    const { password: _, ...userData } = newUser;
-    this.currentUserSignal.set(userData);
-    this.saveUserToStorage(userData);
-
-    return true;
+    return this.http.post<MessageResponse>(`${this.API_URL}/auth/signup`, signupRequest)
+      .pipe(
+        tap(() => {
+          this.toastr.success('Te has registrado correctamente. Ya puedes iniciar sesión', 'Registro exitoso');
+        }),
+        map(() => true),
+        catchError(error => {
+          console.error('Registration failed', error);
+          if (error.status === 400) {
+            this.toastr.error('El nombre de usuario o correo ya existe', 'Error de registro');
+          } else {
+            this.toastr.error('Ocurrió un error durante el registro', 'Error de registro');
+          }
+          return of(false);
+        })
+      );
   }
 
   logout(): void {
     this.currentUserSignal.set(null);
     localStorage.removeItem(this.STORAGE_KEY);
+    localStorage.removeItem(this.tokenKey);
     this.router.navigate(['/login']);
+    this.toastr.info('Has cerrado sesión correctamente', 'Sesión finalizada');
   }
 
-  updateUserProfile(name: string, email: string): void {
+  updateUserProfile(name: string, email: string): Observable<boolean> {
     const currentUser = this.currentUserSignal();
-    if (!currentUser) return;
+    if (!currentUser) return of(false);
 
     const updatedUser = {
       ...currentUser,
-      name,
-      email,
+      username: name,
+      email
     };
-
-    this.currentUserSignal.set(updatedUser);
-    this.saveUserToStorage(updatedUser);
-
-    // Update user in storage if it's a registered user
-    this.updateUserInStorage(currentUser.id, { name, email });
+    
+    return this.http.put<User>(`${this.API_URL}/users/${currentUser.id}`, updatedUser)
+      .pipe(
+        tap(response => {
+          const user: User = {
+            id: currentUser.id,
+            name: name,
+            email: email,
+            role: currentUser.role,
+            createdAt: currentUser.createdAt
+          };
+          
+          this.currentUserSignal.set(user);
+          this.saveUserToStorage(user);
+        }),
+        map(() => true),
+        catchError(error => {
+          console.error('Profile update failed', error);
+          return of(false);
+        })
+      );
   }
 
-  updatePassword(currentPassword: string, newPassword: string): boolean {
-    const currentUser = this.currentUserSignal();
-    if (!currentUser) return false;
-
-    // Check if user is a mock user
-    const mockUserIndex = this.MOCK_USERS.findIndex(
-      (u) => u.id === currentUser.id && u.password === currentPassword
-    );
-
-    if (mockUserIndex >= 0) {
-      this.MOCK_USERS[mockUserIndex].password = newPassword;
-      return true;
-    }
-
-    // Check if user is a stored user
-    const storedUsers = this.getStoredUsers();
-    const storedUserIndex = storedUsers.findIndex(
-      (u) => u.id === currentUser.id && u.password === currentPassword
-    );
-
-    if (storedUserIndex >= 0) {
-      storedUsers[storedUserIndex].password = newPassword;
-      localStorage.setItem(this.USERS_STORAGE_KEY, JSON.stringify(storedUsers));
-      return true;
-    }
-
-    return false;
+  updatePassword(currentPassword: string, newPassword: string): Observable<boolean> {
+    // This would be implemented with a proper endpoint for password changing
+    // As that's not in the API, returning false
+    return of(false);
   }
 
   private saveUserToStorage(user: User): void {
@@ -175,7 +175,9 @@ export class AuthService {
 
   private loadUserFromStorage(): void {
     const storedUser = localStorage.getItem(this.STORAGE_KEY);
-    if (storedUser) {
+    const token = localStorage.getItem(this.tokenKey);
+    
+    if (storedUser && token) {
       try {
         const user = JSON.parse(storedUser);
         // Convert string dates back to Date objects
@@ -184,38 +186,8 @@ export class AuthService {
       } catch (error) {
         console.error('Failed to parse stored user', error);
         localStorage.removeItem(this.STORAGE_KEY);
+        localStorage.removeItem(this.tokenKey);
       }
-    }
-  }
-
-  private initializeUserStorage(): void {
-    if (!localStorage.getItem(this.USERS_STORAGE_KEY)) {
-      localStorage.setItem(this.USERS_STORAGE_KEY, JSON.stringify([]));
-    }
-  }
-
-  private getStoredUsers(): StoredUser[] {
-    const users = localStorage.getItem(this.USERS_STORAGE_KEY);
-    if (!users) return [];
-
-    try {
-      return JSON.parse(users);
-    } catch (error) {
-      console.error('Failed to parse stored users', error);
-      return [];
-    }
-  }
-
-  private updateUserInStorage(
-    userId: string,
-    updates: Partial<StoredUser>
-  ): void {
-    const storedUsers = this.getStoredUsers();
-    const userIndex = storedUsers.findIndex((u) => u.id === userId);
-
-    if (userIndex >= 0) {
-      storedUsers[userIndex] = { ...storedUsers[userIndex], ...updates };
-      localStorage.setItem(this.USERS_STORAGE_KEY, JSON.stringify(storedUsers));
     }
   }
 
