@@ -1,0 +1,6 @@
+sonar \
+  -Dsonar.projectKey=manuel-mods_sumativa-2-fullstack3-_6dc13011-4556-4f48-8557-0a95d533e792 \
+  -Dsonar.projectName='sumativa-2-fullstack3-' \
+  -Dsonar.host.url=http://localhost:9000 \
+  -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info \
+  -Dsonar.token=sqp_0e4ac5927602e15cc587669fa18e9064427ac807

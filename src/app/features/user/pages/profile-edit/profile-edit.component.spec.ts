@@ -11,6 +11,7 @@ import { ProfileEditComponent } from './profile-edit.component';
 import { AuthService } from '../../../../core/services/auth.service';
 import { CommonModule } from '@angular/common';
 import { UserRole } from '../../../../core/models/user.model';
+import { Observable, of } from 'rxjs';
 
 describe('ProfileEditComponent', () => {
   let component: ProfileEditComponent;
@@ -206,7 +207,7 @@ describe('ProfileEditComponent', () => {
     authService.validatePassword.and.returnValue({ valid: true, errors: [] });
 
     // Mock updatePassword to return false (incorrect current password)
-    authService.updatePassword.and.returnValue(false);
+    authService.updatePassword.and.returnValue(of(false));
 
     component.onSubmitPassword();
 
@@ -235,7 +236,7 @@ describe('ProfileEditComponent', () => {
     authService.validatePassword.and.returnValue({ valid: true, errors: [] });
 
     // Mock updatePassword to return true (success)
-    authService.updatePassword.and.returnValue(true);
+    authService.updatePassword.and.returnValue(of(true));
 
     component.onSubmitPassword();
 

@@ -1,18 +1,23 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { By } from '@angular/platform-browser';
 import { HomeComponent } from './home.component';
 import { ForumService } from '../../../../core/services/forum.service';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
 import { Category } from '../../../../core/models/category.model';
+import {
+  getCommonTestImports,
+  getMockActivatedRoute,
+  getMockRouter
+} from '../../../../core/testing/test-helpers';
 
 describe('HomeComponent', () => {
   let component: HomeComponent;
   let fixture: ComponentFixture<HomeComponent>;
   let forumService: jasmine.SpyObj<ForumService>;
   let router: jasmine.SpyObj<Router>;
-  
+
   const mockCategories: Category[] = [
     {
       id: 'cat1',
@@ -35,17 +40,19 @@ describe('HomeComponent', () => {
     forumService = jasmine.createSpyObj('ForumService', ['getCategory'], {
       categories: mockCategories
     });
-    router = jasmine.createSpyObj('Router', ['navigate']);
+    router = getMockRouter();
 
     await TestBed.configureTestingModule({
       imports: [
+        ...getCommonTestImports(),
         HomeComponent,
         CommonModule,
         RouterLink
       ],
       providers: [
         { provide: ForumService, useValue: forumService },
-        { provide: Router, useValue: router }
+        { provide: Router, useValue: router },
+        { provide: ActivatedRoute, useValue: getMockActivatedRoute() }
       ]
     }).compileComponents();
 

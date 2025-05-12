@@ -1,8 +1,13 @@
 <div
-  class="bg-light min-vh-100 d-flex align-items-center justify-content-center py-4"
+  class="register-page min-vh-100 d-flex align-items-center justify-content-center py-4"
 >
-  <div class="bg-white p-4 rounded shadow-lg w-100" style="max-width: 28rem">
-    <h2 class="text-center text-primary fw-bold mb-4">Crear una Cuenta</h2>
+  <div class="bg-white p-4 rounded shadow-lg w-100" style="max-width: 32rem">
+    <div class="text-center mb-4">
+      <h2 class="text-primary fw-bold">Crear una Cuenta</h2>
+      <p class="text-muted">
+        Completa el formulario para unirte a nuestra comunidad
+      </p>
+    </div>
 
     <form
       [formGroup]="registerForm"
@@ -12,19 +17,22 @@
     >
       <!-- Error message -->
       <div *ngIf="errorMessage" class="alert alert-danger mb-4" role="alert">
-        {{ errorMessage }}
+        <i class="fa fa-exclamation-triangle me-2"></i>{{ errorMessage }}
       </div>
 
       <!-- Name -->
       <div class="mb-3">
-        <label for="name" class="form-label">Nombre Completo</label>
-        <input
-          type="text"
-          id="name"
-          formControlName="name"
-          class="form-control"
-          placeholder="Ingresa tu nombre completo"
-        />
+        <label for="name" class="form-label">Nombre de usuario</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="fa fa-user"></i></span>
+          <input
+            type="text"
+            id="name"
+            formControlName="name"
+            class="form-control"
+            placeholder="Ingresa tu nombre de usuario"
+          />
+        </div>
         <div
           *ngIf="
             registerForm.get('name')?.invalid &&
@@ -44,13 +52,16 @@
       <!-- Email -->
       <div class="mb-3">
         <label for="email" class="form-label">Correo Electrónico</label>
-        <input
-          type="email"
-          id="email"
-          formControlName="email"
-          class="form-control"
-          placeholder="Ingresa tu correo electrónico"
-        />
+        <div class="input-group">
+          <span class="input-group-text"><i class="fa fa-envelope"></i></span>
+          <input
+            type="email"
+            id="email"
+            formControlName="email"
+            class="form-control"
+            placeholder="Ingresa tu correo electrónico"
+          />
+        </div>
         <div
           *ngIf="
             registerForm.get('email')?.invalid &&
@@ -70,31 +81,82 @@
       <!-- Password -->
       <div class="mb-3">
         <label for="password" class="form-label">Contraseña</label>
-        <input
-          type="password"
-          id="password"
-          formControlName="password"
-          (blur)="validatePassword()"
-          class="form-control"
-          placeholder="Crea una contraseña"
-        />
+        <div class="input-group">
+          <input
+            [type]="showPassword ? 'text' : 'password'"
+            id="password"
+            formControlName="password"
+            (input)="validatePassword()"
+            class="form-control"
+            placeholder="Crea una contraseña"
+          />
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            (click)="togglePasswordVisibility()"
+          >
+            <i
+              class="fa"
+              [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"
+            ></i>
+          </button>
+        </div>
+
         <div
           *ngIf="
             registerForm.get('password')?.invalid &&
-            registerForm.get('password')?.touched
+            registerForm.get('password')?.touched &&
+            registerForm.get('password')?.errors?.['required']
           "
           class="text-danger small mt-1"
         >
-          <span *ngIf="registerForm.get('password')?.errors?.['required']"
-            >La contraseña es requerida</span
-          >
+          <span>La contraseña es requerida</span>
         </div>
-        <div
-          *ngIf="passwordValidationErrors.length > 0"
-          class="text-danger small mt-1"
-        >
-          <ul class="ps-3">
-            <li *ngFor="let error of passwordValidationErrors">{{ error }}</li>
+
+        <!-- Password requirements - always visible -->
+        <div class="small mt-2 password-hints">
+          <p class="mb-1 text-muted">Tu contraseña debe incluir:</p>
+          <ul class="ps-3 mb-0">
+            <li
+              [ngClass]="{
+                'text-success': !hasError('minlength'),
+                'text-muted': hasError('minlength')
+              }"
+            >
+              Al menos 8 caracteres
+            </li>
+            <li
+              [ngClass]="{
+                'text-success': !hasError('maxlength'),
+                'text-muted': hasError('maxlength')
+              }"
+            >
+              Menos de 30 caracteres
+            </li>
+            <li
+              [ngClass]="{
+                'text-success': !hasError('uppercase'),
+                'text-muted': hasError('uppercase')
+              }"
+            >
+              Al menos una letra mayúscula
+            </li>
+            <li
+              [ngClass]="{
+                'text-success': !hasError('digit'),
+                'text-muted': hasError('digit')
+              }"
+            >
+              Al menos un número
+            </li>
+            <li
+              [ngClass]="{
+                'text-success': !hasError('specialChar'),
+                'text-muted': hasError('specialChar')
+              }"
+            >
+              Al menos un carácter especial.
+            </li>
           </ul>
         </div>
       </div>
@@ -104,13 +166,25 @@
         <label for="confirmPassword" class="form-label"
           >Confirmar Contraseña</label
         >
-        <input
-          type="password"
-          id="confirmPassword"
-          formControlName="confirmPassword"
-          class="form-control"
-          placeholder="Confirma tu contraseña"
-        />
+        <div class="input-group">
+          <input
+            [type]="showConfirmPassword ? 'text' : 'password'"
+            id="confirmPassword"
+            formControlName="confirmPassword"
+            class="form-control"
+            placeholder="Confirma tu contraseña"
+          />
+          <button
+            type="button"
+            class="btn btn-outline-secondary"
+            (click)="toggleConfirmPasswordVisibility()"
+          >
+            <i
+              class="fa"
+              [ngClass]="showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'"
+            ></i>
+          </button>
+        </div>
         <div
           *ngIf="
             registerForm.get('confirmPassword')?.invalid &&
@@ -132,16 +206,26 @@
       </div>
 
       <!-- Register button -->
-      <button type="submit" class="btn btn-primary w-100 mb-3">
-        Registrarse
+      <button type="submit" class="btn btn-primary w-100 mb-3 py-2">
+        <i class="fa fa-user-plus me-2"></i>Registrarse
       </button>
 
       <!-- Login link -->
-      <div class="text-center">
+      <div class="text-center mt-4">
         <span class="text-muted">¿Ya tienes una cuenta?</span>
-        <a routerLink="/login" class="text-primary text-decoration-none ms-1"
+        <a
+          routerLink="/login"
+          class="text-primary fw-semibold text-decoration-none ms-1"
           >Iniciar Sesión</a
         >
+      </div>
+
+      <hr class="my-4" />
+
+      <div class="text-center text-muted small">
+        <p class="mb-0">
+          Al registrarte, aceptas nuestros términos y condiciones
+        </p>
       </div>
     </form>
   </div>

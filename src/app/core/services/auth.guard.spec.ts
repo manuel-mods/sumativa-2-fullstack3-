@@ -3,13 +3,17 @@ import { Router } from '@angular/router';
 import { authGuard, adminGuard } from './auth.guard';
 import { AuthService } from './auth.service';
 import { UserRole } from '../models/user.model';
+import { UrlTree } from '@angular/router';
 
 describe('Auth Guards', () => {
   let routerSpy: jasmine.SpyObj<Router>;
   let authServiceSpy: jasmine.SpyObj<AuthService>;
+  const mockUrlTree = {} as UrlTree;
 
   beforeEach(() => {
-    routerSpy = jasmine.createSpyObj('Router', ['navigate']);
+    routerSpy = jasmine.createSpyObj('Router', ['navigate', 'parseUrl']);
+    routerSpy.parseUrl.and.returnValue(mockUrlTree);
+
     authServiceSpy = jasmine.createSpyObj('AuthService', [], {
       isLoggedIn: false,
       isAdmin: false
@@ -27,25 +31,25 @@ describe('Auth Guards', () => {
     it('should allow access for authenticated users', () => {
       // Set isLoggedIn to true
       Object.defineProperty(authServiceSpy, 'isLoggedIn', { get: () => true });
-      
+
       const result = TestBed.runInInjectionContext(() => {
         return authGuard();
       });
-      
+
       expect(result).toBeTrue();
-      expect(routerSpy.navigate).not.toHaveBeenCalled();
+      expect(routerSpy.parseUrl).not.toHaveBeenCalled();
     });
 
     it('should redirect unauthenticated users to login', () => {
       // Set isLoggedIn to false
       Object.defineProperty(authServiceSpy, 'isLoggedIn', { get: () => false });
-      
+
       const result = TestBed.runInInjectionContext(() => {
         return authGuard();
       });
-      
-      expect(result).toBeFalse();
-      expect(routerSpy.navigate).toHaveBeenCalledWith(['/login']);
+
+      expect(result).toBe(mockUrlTree);
+      expect(routerSpy.parseUrl).toHaveBeenCalledWith('/login');
     });
   });
 
@@ -54,39 +58,39 @@ describe('Auth Guards', () => {
       // Set isLoggedIn and isAdmin to true
       Object.defineProperty(authServiceSpy, 'isLoggedIn', { get: () => true });
       Object.defineProperty(authServiceSpy, 'isAdmin', { get: () => true });
-      
+
       const result = TestBed.runInInjectionContext(() => {
         return adminGuard();
       });
-      
+
       expect(result).toBeTrue();
-      expect(routerSpy.navigate).not.toHaveBeenCalled();
+      expect(routerSpy.parseUrl).not.toHaveBeenCalled();
     });
 
     it('should redirect non-admin users to home', () => {
       // Set isLoggedIn to true but isAdmin to false
       Object.defineProperty(authServiceSpy, 'isLoggedIn', { get: () => true });
       Object.defineProperty(authServiceSpy, 'isAdmin', { get: () => false });
-      
+
       const result = TestBed.runInInjectionContext(() => {
         return adminGuard();
       });
-      
-      expect(result).toBeFalse();
-      expect(routerSpy.navigate).toHaveBeenCalledWith(['/home']);
+
+      expect(result).toBe(mockUrlTree);
+      expect(routerSpy.parseUrl).toHaveBeenCalledWith('/home');
     });
 
     it('should redirect unauthenticated users to home', () => {
       // Set both isLoggedIn and isAdmin to false
       Object.defineProperty(authServiceSpy, 'isLoggedIn', { get: () => false });
       Object.defineProperty(authServiceSpy, 'isAdmin', { get: () => false });
-      
+
       const result = TestBed.runInInjectionContext(() => {
         return adminGuard();
       });
-      
-      expect(result).toBeFalse();
-      expect(routerSpy.navigate).toHaveBeenCalledWith(['/home']);
+
+      expect(result).toBe(mockUrlTree);
+      expect(routerSpy.parseUrl).toHaveBeenCalledWith('/home');
     });
   });
 });

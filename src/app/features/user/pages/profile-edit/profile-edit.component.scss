@@ -1,0 +1,70 @@
+// Custom styling for profile edit page
+.card {
+  border: none;
+  border-radius: 0.5rem;
+  transition: all 0.3s;
+  
+  .card-header {
+    border-radius: 0.5rem 0.5rem 0 0;
+  }
+}
+
+.form-control:focus {
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+}
+
+.input-group-text {
+  background-color: #f8f9fa;
+  border-right: none;
+}
+
+.input-group .form-control {
+  border-left: none;
+}
+
+.input-group:focus-within .input-group-text {
+  border-color: #86b7fe;
+  outline: 0;
+}
+
+// Style for tabs
+.nav-tabs .nav-link {
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: #6c757d;
+  font-weight: 500;
+  padding: 0.75rem 1rem;
+  transition: all 0.2s;
+  
+  &:hover {
+    border-bottom: 3px solid #dee2e6;
+    background-color: transparent;
+  }
+  
+  &.active {
+    color: #0d6efd;
+    border-bottom: 3px solid #0d6efd;
+    background-color: transparent;
+  }
+}
+
+// Improved button styling
+.btn-primary {
+  border-radius: 0.25rem;
+  padding: 0.5rem 1.5rem;
+  transition: all 0.2s;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+  
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// Subtle shadow effect for input fields on focus
+.form-control:focus, .input-group-text:focus-within {
+  box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+}

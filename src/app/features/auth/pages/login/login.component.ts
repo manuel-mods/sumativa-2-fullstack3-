@@ -30,7 +30,7 @@ export class LoginComponent {
       this.router.navigate(['/home']);
     }
     this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
+      email: ['', [Validators.required]],
       password: ['', Validators.required],
     });
   }

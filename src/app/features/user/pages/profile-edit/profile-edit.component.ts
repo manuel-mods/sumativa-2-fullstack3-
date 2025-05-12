@@ -1,15 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { AuthService } from '../../../../core/services/auth.service';
 import { Router } from '@angular/router';
+import { NgbNavModule } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-profile-edit',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, NgbNavModule],
   templateUrl: './profile-edit.component.html',
-  styleUrl: './profile-edit.component.scss'
+  styleUrl: './profile-edit.component.scss',
 })
 export class ProfileEditComponent implements OnInit {
   profileForm: FormGroup;
@@ -17,7 +23,7 @@ export class ProfileEditComponent implements OnInit {
   successMessage = '';
   passwordErrors: string[] = [];
   activeTab = 'profile'; // 'profile' or 'password'
-  
+
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -25,44 +31,45 @@ export class ProfileEditComponent implements OnInit {
   ) {
     this.profileForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
-      email: ['', [Validators.required, Validators.email]]
+      email: ['', [Validators.required, Validators.email]],
     });
 
     this.passwordForm = this.fb.group({
       currentPassword: ['', [Validators.required]],
       newPassword: ['', [Validators.required]],
-      confirmPassword: ['', [Validators.required]]
+      confirmPassword: ['', [Validators.required]],
     });
   }
-  
+
   ngOnInit(): void {
     if (!this.authService.currentUser) {
       this.router.navigate(['/login']);
       return;
     }
-    
+
     // Load user data
     const user = this.authService.currentUser;
     this.profileForm.patchValue({
       name: user.name,
-      email: user.email
+      email: user.email,
     });
   }
-  
+
   onSubmitProfile(): void {
     if (this.profileForm.invalid) {
       this.profileForm.markAllAsTouched();
       return;
     }
-    
+
     const { name, email } = this.profileForm.value;
-    this.authService.updateUserProfile(name, email);
-    this.successMessage = 'Profile updated successfully';
-    
-    // Reset success message after 3 seconds
-    setTimeout(() => {
-      this.successMessage = '';
-    }, 3000);
+    this.authService.updateUserProfile(name, email).subscribe((response) => {
+      this.successMessage = 'Profile updated successfully';
+
+      // Reset success message after 3 seconds
+      setTimeout(() => {
+        this.successMessage = '';
+      }, 3000);
+    });
   }
 
   onSubmitPassword(): void {
@@ -71,8 +78,9 @@ export class ProfileEditComponent implements OnInit {
       return;
     }
 
-    const { currentPassword, newPassword, confirmPassword } = this.passwordForm.value;
-    
+    const { currentPassword, newPassword, confirmPassword } =
+      this.passwordForm.value;
+
     // Check if new password and confirm password match
     if (newPassword !== confirmPassword) {
       this.passwordErrors = ['New password and confirm password do not match'];
@@ -87,7 +95,10 @@ export class ProfileEditComponent implements OnInit {
     }
 
     // Update password
-    const success = this.authService.updatePassword(currentPassword, newPassword);
+    const success = this.authService.updatePassword(
+      currentPassword,
+      newPassword
+    );
     if (success) {
       this.successMessage = 'Password updated successfully';
       this.passwordForm.reset();

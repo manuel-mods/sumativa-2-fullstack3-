@@ -20,6 +20,17 @@ export class RegisterComponent {
   registerForm: FormGroup;
   errorMessage = '';
   passwordValidationErrors: string[] = [];
+  showPassword = false;
+  showConfirmPassword = false;
+
+  // Track specific password validation errors
+  passwordErrorTypes = {
+    minlength: false,
+    maxlength: false,
+    uppercase: false,
+    digit: false,
+    specialChar: false
+  };
 
   constructor(
     private fb: FormBuilder,
@@ -35,6 +46,9 @@ export class RegisterComponent {
       },
       { validators: this.passwordMatchValidator }
     );
+
+    // Initialize password validation on component load
+    this.validatePassword();
   }
 
   passwordMatchValidator(formGroup: FormGroup) {
@@ -48,16 +62,58 @@ export class RegisterComponent {
     return { passwordMismatch: true };
   }
 
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  toggleConfirmPasswordVisibility(): void {
+    this.showConfirmPassword = !this.showConfirmPassword;
+  }
+
   validatePassword() {
     const password = this.registerForm.get('password')?.value;
-    if (!password) return;
+    if (!password) {
+      // Initialize all error types as true when no password
+      Object.keys(this.passwordErrorTypes).forEach(key => {
+        this.passwordErrorTypes[key as keyof typeof this.passwordErrorTypes] = true;
+      });
+      return;
+    }
 
     const validation = this.authService.validatePassword(password);
     this.passwordValidationErrors = validation.errors;
 
+    // Reset all error types
+    Object.keys(this.passwordErrorTypes).forEach(key => {
+      this.passwordErrorTypes[key as keyof typeof this.passwordErrorTypes] = false;
+    });
+
+    // Set specific error flags based on validation errors
+    this.passwordValidationErrors.forEach(error => {
+      if (error.includes('al menos 8 caracteres')) {
+        this.passwordErrorTypes.minlength = true;
+      }
+      if (error.includes('menos de 30 caracteres')) {
+        this.passwordErrorTypes.maxlength = true;
+      }
+      if (error.includes('letra mayúscula')) {
+        this.passwordErrorTypes.uppercase = true;
+      }
+      if (error.includes('un número')) {
+        this.passwordErrorTypes.digit = true;
+      }
+      if (error.includes('carácter especial')) {
+        this.passwordErrorTypes.specialChar = true;
+      }
+    });
+
     if (!validation.valid) {
       this.registerForm.get('password')?.setErrors({ invalidPassword: true });
     }
+  }
+
+  hasError(errorType: string): boolean {
+    return this.passwordErrorTypes[errorType as keyof typeof this.passwordErrorTypes];
   }
 
   onSubmit(): void {
